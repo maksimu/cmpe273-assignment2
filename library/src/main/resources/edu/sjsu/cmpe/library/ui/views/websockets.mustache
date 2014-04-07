@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Home Page</title>
+
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/superhero/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://mottie.github.io/tablesorter/css/theme.default.css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <script src="assets/js/stomp.min.js" type="application/javascript"></script>
+    <script src="http://mottie.github.io/tablesorter/js/jquery.tablesorter.min.js"
+            type="application/javascript"></script>
+    <script src="http://stevenlevithan.com/assets/misc/date.format.js" type="application/javascript"></script>
+
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <span class="navbar-brand" href="#">Assignment 2 <small>{{libraryName}}</small></span>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/library/" target="_blank">Home</a></li>
+                <li class="active"><a href="#">Web Sockets <span class="label label-success">Extra</span></a>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="page-header">
+        <h1>WebSocket Listener for
+            <small>{{libraryName}}</small>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <h3>Apollo Host:
+                <small>{{apolloHost}}</small>
+            </h3>
+            <h3>Apollo Port:
+                <small>{{apolloPort}}</small>
+            </h3>
+            <h3>Topic Name:
+                <small>{{stompTopicName}}</small>
+            </h3>
+            <h3>Connection Status: <span class="change label label-danger"></span></h3>
+
+            <h3>Last Updated:
+                <small><span id="lastWSUpdated">waiting...</span></small>
+            </h3>
+        </div>
+        <div class="col-xs-6">
+            <h5>Debug messages
+                <small>(updated on <span id="debugRefreshTime"></span> )</small>
+            </h5>
+            <textarea id="debugTextArea" rows="6"
+                      style="width: 100%; height: 250px; background-color:#2b3e50; color:#AAA;border: 0;font-size: 8pt;box-shadow: 0 0 10px #719ECE;"></textarea>
+        </div>
+    </div>
+
+
+    <table id="myTable" class="tablesorter">
+        <thead>
+        <tr>
+            <th>Received On</th>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Image</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    // Set up empty table with second and first columns pre-sorted
+    $("#myTable").tablesorter({
+        // sort on the first column and second column in ascending order
+        sortList: [
+            [0, 1]
+        ]
+    });
+
+
+    var urlWS = "ws://{{apolloHost}}:61623";
+
+
+    var socket = new WebSocket(urlWS);
+    var client = Stomp.over(socket);
+
+    client.connect("admin", "password",
+
+            // success
+            function () {
+                console.log("CONNECTED");
+                $('.change').removeClass("label-danger").addClass("label-success").text("Connected");
+
+                var subscription = client.subscribe("/topic/{{stompTopicName}}", subscriptionCallback);
+            },
+
+            // error
+            function () {
+                console.error("EEEEErrrrr.....");
+                $('.change').removeClass("label-success").addClass("label-danger").text("Disconnected");
+            }
+    );
+
+
+    client.debug = function (str) {
+
+        $("#debugTextArea").append(str + "\n");
+        $("#debugRefreshTime").text(new Date().format("m/dd/yy h:MM:ss TT"));
+
+    };
+
+    subscriptionCallback = function (message) {
+        // called when the client receives a STOMP message from the server
+        if (message.body) {
+            console.log("got message with body " + message.body)
+
+            // 123:"Restful Web Services":"computer":"http://goo.gl/ZGmzoJ"
+            var book = message.body.split(":");
+
+            var isbn = book[0];
+            var title = book[1].replace(new RegExp('"', 'g'), '');
+            var category = book[2].replace(new RegExp('"', 'g'), '');
+
+            var imageurl1 = book[3].replace(new RegExp('"', 'g'), '');
+            var imageurl2 = book[4].replace(new RegExp('"', 'g'), '');
+            var imageurl = imageurl1 + ":" + imageurl2;
+
+            appendData(isbn, title, category, imageurl);
+        } else {
+            console.log("got empty message");
+        }
+    }
+
+    appendData = function (isbn, title, category, url) {
+
+        var now = new Date().format("m/dd/yy h:MM:ss TT");
+
+
+        var row = "<tr>" +
+                        "<td>" + now + "</td>" +
+                        "<td>" + isbn + "</td>" +
+                        "<td>" + title + "</td>" +
+                        "<td>" + category + "</td>" +
+                        "<td><img class='img-thumbnail' src='" + url + "' width='35px'/></td>" +
+                        "</tr>",
+                $row = $(row),
+        // resort table using the current sort; set to false to prevent resort, otherwise
+        // any other value in resort will automatically trigger the table resort.
+                resort = true;
+
+
+        $('#myTable')
+                .find('tbody').append($row)
+                .trigger('addRows', [$row, resort]);
+
+        $('#lastWSUpdated').text(now);
+
+
+        var bookStatUrl = "/library/v1/books/frompublisher";
+
+
+        var bookData = { "isbn": isbn, "title" : title, "category": category, "coverimage": url, "status" : "available"};
+
+        console.log("Send book to the server from publisher isbn=[" + isbn + "]");
+        $.ajax({
+            type: "POST",
+            contentType : 'application/json',
+            url: bookStatUrl,
+            data: JSON.stringify(bookData)
+        })
+                .done(function (msg) {
+                    console.log("   *** successfully send isbn=[" + isbn + "]");
+                });
+
+
+
+
+
+        return true;
+
+
+    }
+
+
+</script>
+
+
+</body>
+</html>

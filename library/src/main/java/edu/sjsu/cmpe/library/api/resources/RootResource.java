@@ -1,16 +1,15 @@
 package edu.sjsu.cmpe.library.api.resources;
 
+import com.codahale.metrics.annotation.Timed;
+import edu.sjsu.cmpe.library.dto.LinkDto;
+import edu.sjsu.cmpe.library.dto.LinksDto;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import com.yammer.metrics.annotation.Timed;
-
-import edu.sjsu.cmpe.library.dto.LinkDto;
-import edu.sjsu.cmpe.library.dto.LinksDto;
 
 @Path("/v1/")
 @Produces(MediaType.APPLICATION_JSON)

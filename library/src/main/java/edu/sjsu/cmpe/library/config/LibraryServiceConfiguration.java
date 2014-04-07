@@ -1,10 +1,11 @@
 package edu.sjsu.cmpe.library.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.Configuration;
+import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yammer.dropwizard.config.Configuration;
-
+@Data
 public class LibraryServiceConfiguration extends Configuration {
     @NotEmpty
     @JsonProperty
@@ -18,48 +19,20 @@ public class LibraryServiceConfiguration extends Configuration {
     @JsonProperty
     private String libraryName;
 
-    /**
-     * @return the stompQueueName
-     */
-    public String getStompQueueName() {
-	return stompQueueName;
-    }
+    @NotEmpty
+    @JsonProperty
+    private String apolloUser;
 
-    /**
-     * @param stompQueueName
-     *            the stompQueueName to set
-     */
-    public void setStompQueueName(String stompQueueName) {
-	this.stompQueueName = stompQueueName;
-    }
+    @NotEmpty
+    @JsonProperty
+    private String apolloPassword;
 
-    /**
-     * @return the stompTopicName
-     */
-    public String getStompTopicName() {
-	return stompTopicName;
-    }
+    @NotEmpty
+    @JsonProperty
+    private String apolloHost;
 
-    /**
-     * @param stompTopicName
-     *            the stompTopicName to set
-     */
-    public void setStompTopicName(String stompTopicName) {
-	this.stompTopicName = stompTopicName;
-    }
+    @NotEmpty
+    @JsonProperty
+    private String apolloPort;
 
-    /**
-     * @return the libraryName
-     */
-    public String getLibraryName() {
-	return libraryName;
-    }
-
-    /**
-     * @param libraryName
-     *            the libraryName to set
-     */
-    public void setLibraryName(String libraryName) {
-	this.libraryName = libraryName;
-    }
 }

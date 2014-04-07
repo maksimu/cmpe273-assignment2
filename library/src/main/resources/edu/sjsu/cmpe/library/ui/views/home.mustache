@@ -1,6 +1,81 @@
 <html>
-    <body>
-        <!-- calls getBook().getTitle() -->
-        <h1>The most popular book of the library is {{book.title}}!</h1>
-    </body>
+<head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/superhero/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://mottie.github.io/tablesorter/css/theme.default.css">
+    <link href="/library/assets/css/tablecloth.css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <span class="navbar-brand" href="#">Assignment 2 <small>{{libraryName}}</small></span>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="websockets" target="_blank">Web Sockets <span class="label label-success">Extra</span></a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+<div class="container" style="padding:40px 15px;">
+
+    <div class="jumbotron">
+
+        <p class="bg-danger">Make sure to open another tab to enable communication with the publisher to add new arrivals or update lost books </p>
+
+        <!-- calls getBooks() from HomeResource -->
+        <table border="1">
+            <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Report Lost</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {{#books}}
+                <tr>
+                    <td>{{isbn}}</td>
+                    <td><img class="img-thumbnail" height="92" width="72" src="{{coverimage}}"></td>
+                    <td>{{title}}</td>
+                    <td>{{category}}</td>
+                    <td>
+                        <span class="label label-default" id="statusLbl-{{isbn}}"> {{status}}</span></td>
+                    <td>
+                        <button id="{{isbn}}" type="button" class="btn btn-primary">Report Lost</button>
+                    </td>
+                </tr>
+            {{/books}}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- script tags -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="/library/assets/js/jquery.metadata.js"></script>
+<script src="/library/assets/js/jquery.tablecloth.js"></script>
+<script src="/library/assets/js/jquery.tablesorter.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<!-- application ui scripts -->
+<script src="/library/assets/js/app.js"></script>
+
+
+</body>
 </html>

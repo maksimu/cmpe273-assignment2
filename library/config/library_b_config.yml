@@ -1,16 +1,15 @@
-# Library A instance Config  #
+##############################
+# Library B instance Config  #
 ##############################
 
 # Apollo STOMP Broker Configuration
 stompQueueName: 53730.book.orders
 
-# Library A subscribes to all book categories If book.* doesn't work, try book.all
-stompTopicName: "53730.book.*"
-
-
+# Library B subscribes to the Computer category ONLY!
+stompTopicName: "53730.book.computer"
 
 # Name for library A
-libraryName: library-a
+libraryName: library-b
 
 # Apollo STOMP Broker URL and login
 apolloUser: "admin"
@@ -20,15 +19,11 @@ apolloPort: 61613
 
 # HTTP-specific options.
 server:
-#  applicationContextPath: /library/*
-  # Root Path http://{host}:{port}/xxx
-  applicationConnectors:
-      - type: http
-        port: 8003
-
-#
-#   adminConnectors:
-#      - type: http
-#        port: 9002
+  type: simple
+  applicationContextPath: /library
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8002
 
 
