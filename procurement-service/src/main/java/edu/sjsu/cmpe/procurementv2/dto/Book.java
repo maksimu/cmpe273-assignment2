@@ -1,4 +1,4 @@
-package edu.sjsu.cmpe.procurement.domain;
+package edu.sjsu.cmpe.procurementv2.dto;
 
 
 public class Book {
@@ -15,8 +15,7 @@ public class Book {
     }
 
     /**
-     * @param isbn
-     *            the isbn to set
+     * @param isbn the isbn to set
      */
     public void setIsbn(long isbn) {
 	this.isbn = isbn;
@@ -30,8 +29,7 @@ public class Book {
     }
 
     /**
-     * @param title
-     *            the title to set
+     * @param title the title to set
      */
     public void setTitle(String title) {
 	this.title = title;
